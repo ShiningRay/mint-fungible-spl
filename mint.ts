@@ -10,7 +10,8 @@
 import { Transaction, SystemProgram, Keypair, Connection, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, getMinimumBalanceForRentExemptMint, getAssociatedTokenAddress, createAssociatedTokenAccountInstruction, createMintToInstruction } from '@solana/spl-token';
 import { DataV2, createCreateMetadataAccountV3Instruction } from '@metaplex-foundation/mpl-token-metadata';
-import { bundlrStorage, keypairIdentity, Metaplex, UploadMetadataInput } from '@metaplex-foundation/js';
+import { irysStorage, keypairIdentity, Metaplex, UploadMetadataInput } from '@metaplex-foundation/js';
+
 import secret from './guideSecret.json';
 
 const endpoint = 'https://api.devnet.solana.com'; //Replace with your RPC Endpoint
@@ -18,8 +19,8 @@ const solanaConnection = new Connection(endpoint);
 const userWallet = Keypair.fromSecretKey(new Uint8Array(secret));
 const metaplex = Metaplex.make(solanaConnection)
   .use(keypairIdentity(userWallet))
-  .use(bundlrStorage({
-    address: 'https://devnet.bundlr.network',
+  .use(irysStorage({
+    address: 'https://devnet.irys.xyz',
     providerUrl: endpoint,
     timeout: 60000,
   }));
@@ -61,7 +62,6 @@ const createNewMintTransaction = async (connection: Connection, payer: Keypair, 
   //Get the minimum lamport balance to create a new account and avoid rent payments
   const requiredBalance = await getMinimumBalanceForRentExemptMint(connection);
   //metadata account associated with mint
-  // @ts-ignore
   const metadataPDA = await metaplex.nfts().pdas().metadata({ mint: mintKeypair.publicKey });
   //get associated token account of your wallet
   const tokenATA = await getAssociatedTokenAddress(mintKeypair.publicKey, destinationWallet);
